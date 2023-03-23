@@ -12,6 +12,12 @@ const IOS_MODAL_HEIGHT = 262;
 
 export default class RNPickerSelect extends PureComponent {
     static propTypes = {
+        // A platform-dependent reference to an element that exposes a best-effort `focus` method that doesn't involve
+        // opening the picker
+        focusRef: PropTypes.oneOfType([
+            PropTypes.func,
+            PropTypes.shape({ current: PropTypes.instanceOf(React.Component) }),
+        ]),
         onValueChange: PropTypes.func.isRequired,
         items: PropTypes.arrayOf(
             PropTypes.shape({
@@ -67,6 +73,7 @@ export default class RNPickerSelect extends PureComponent {
     };
 
     static defaultProps = {
+        focusRef: undefined,
         value: undefined,
         placeholder: {
             label: 'Select an item...',
@@ -436,9 +443,12 @@ export default class RNPickerSelect extends PureComponent {
                         this.getPlaceholderStyle(),
                     ]}
                     value={selectedItem.inputLabel ? selectedItem.inputLabel : selectedItem.label}
-                    ref={this.setInputRef}
                     editable={false}
                     {...textInputProps}
+                    ref={(el) => {
+                        this.setInputRef(el);
+                        setRef(this.props.focusRef, el);
+                    }}
                 />
                 {this.renderIcon()}
             </View>
@@ -563,6 +573,7 @@ export default class RNPickerSelect extends PureComponent {
                     onValueChange={this.onValueChange}
                     selectedValue={selectedItem.value}
                     {...pickerProps}
+                    ref={this.props.focusRef}
                     onFocus={() => {
                         Keyboard.dismiss();
                         if (pickerProps.onFocus) {
@@ -590,6 +601,7 @@ export default class RNPickerSelect extends PureComponent {
                     onValueChange={this.onValueChange}
                     selectedValue={selectedItem.value}
                     {...pickerProps}
+                    ref={this.props.focusRef}
                 >
                     {this.renderPickerItems()}
                 </Picker>
@@ -618,3 +630,11 @@ export default class RNPickerSelect extends PureComponent {
 }
 
 export { defaultStyles };
+
+function setRef(ref, el) {
+    if (typeof ref === 'function') {
+        ref(el);
+    } else if (ref) {
+        ref.current = el;
+    }
+}
