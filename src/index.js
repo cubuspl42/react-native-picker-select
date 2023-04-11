@@ -5,16 +5,17 @@ import isEqual from 'lodash.isequal';
 import { Picker } from '@react-native-picker/picker';
 import { defaultStyles } from './styles';
 import { Dimensions } from 'react-native';
-
-// Measuring the modal before rendering is not working reliably, so we need to hardcode the height
-// This height was tested thoroughly on several iPhone Models (from iPhone 8 to 14 Pro)
-const IOS_MODAL_HEIGHT = 262;
+import { PickerAvoidingView } from './PickerAvoidingView';
+import { PickerStateContext, PickerStateProvider } from './PickerStateProvider';
+import { IOS_MODAL_HEIGHT } from './constants';
 
 const preserveSpaces = (label) => {
     return label.replace(/ /g, '\u00a0');
 };
 
 export default class RNPickerSelect extends PureComponent {
+    static contextType = PickerStateContext;
+
     static propTypes = {
         onValueChange: PropTypes.func.isRequired,
         items: PropTypes.arrayOf(
@@ -286,9 +287,14 @@ export default class RNPickerSelect extends PureComponent {
 
     togglePicker(animate = false, postToggleCallback) {
         const { disabled } = this.props;
+        const { showPicker } = this.state;
 
         if (disabled) {
             return;
+        }
+
+        if (this.context) {
+            this.context.setIsPickerOpen(!showPicker);
         }
 
         this.triggerOpenCloseCallbacks();
@@ -635,4 +641,4 @@ export default class RNPickerSelect extends PureComponent {
     }
 }
 
-export { defaultStyles };
+export { defaultStyles, PickerStateProvider, PickerAvoidingView };
