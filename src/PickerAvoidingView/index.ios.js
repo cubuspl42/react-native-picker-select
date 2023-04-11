@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { PickerStateContext } from '../PickerStateProvider';
 import { IOS_MODAL_HEIGHT } from '../constants';
+import PropTypes from 'prop-types';
 
 /**
  * PickerAvoidingView is a React component that adjusts the view layout to avoid
@@ -16,12 +17,17 @@ import { IOS_MODAL_HEIGHT } from '../constants';
  * protected from obstruction by the picker modal
  */
 export class PickerAvoidingView extends Component {
+    static propTypes = {
+        enabled: PropTypes.bool,
+    };
+
     static defaultProps = {
         enabled: true,
     };
 
     render() {
-        const { enabled, style, children, ...otherProps } = this.props;
+        const { enabled, style, ...viewProps } = this.props;
+
         return (
             <PickerStateContext.Consumer>
                 {(context) => {
@@ -32,11 +38,7 @@ export class PickerAvoidingView extends Component {
                           })
                         : style;
 
-                    return (
-                        <View style={effectiveStyle} {...otherProps}>
-                            {children}
-                        </View>
-                    );
+                    return <View style={effectiveStyle} {...viewProps} />;
                 }}
             </PickerStateContext.Consumer>
         );

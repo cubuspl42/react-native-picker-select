@@ -11,5 +11,5 @@ import { View } from 'react-native';
 export function PickerAvoidingView(props) {
     // eslint-disable-next-line no-unused-vars
     const { enabled, ...viewProps } = props;
-    return <View {...viewProps}>{props.children}</View>;
+    return <View {...viewProps} />;
 }
