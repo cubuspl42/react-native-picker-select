@@ -10,6 +10,10 @@ import { Dimensions } from 'react-native';
 // This height was tested thoroughly on several iPhone Models (from iPhone 8 to 14 Pro)
 const IOS_MODAL_HEIGHT = 262;
 
+const preserveSpaces = (label) =>  {
+    return label.replace(/ /g, '\u00a0');
+ }
+
 export default class RNPickerSelect extends PureComponent {
     static propTypes = {
         onValueChange: PropTypes.func.isRequired,
@@ -298,7 +302,7 @@ export default class RNPickerSelect extends PureComponent {
         return items.map((item) => {
             return (
                 <Picker.Item
-                    label={item.label}
+                    label={Platform.OS === 'web' ? preserveSpaces(item.label) : item.label} // remove this once this PR is merged https://github.com/react-native-picker/picker/pull/485
                     value={item.value}
                     key={item.key || item.label}
                     color={item.color}
