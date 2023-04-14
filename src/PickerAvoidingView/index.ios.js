@@ -2,11 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { PickerStateContext } from '../PickerStateProvider';
 import { IOS_MODAL_ANIMATION_DURATION_MS, IOS_MODAL_HEIGHT } from '../constants';
-
-function schedule(callback, timeout) {
-    const handle = setTimeout(callback, timeout);
-    return () => clearTimeout(handle);
-}
+import { schedule } from './utils';
 
 /**
  * PickerAvoidingView is a React component that adjusts the view layout to avoid

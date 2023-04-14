@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, useEffect } from 'react';
 import {
     Dimensions,
     Keyboard,
@@ -16,6 +16,7 @@ import { defaultStyles } from './styles';
 import { PickerAvoidingView } from './PickerAvoidingView';
 import { PickerStateContext, PickerStateProvider } from './PickerStateProvider';
 import { IOS_MODAL_ANIMATION_DURATION_MS, IOS_MODAL_HEIGHT } from './constants';
+import { schedule } from './PickerAvoidingView/utils';
 
 const preserveSpaces = (label) => {
     return label.replace(/ /g, '\u00a0');
@@ -189,6 +190,13 @@ export default class RNPickerSelect extends PureComponent {
         }
     };
 
+    componentWillUnmount() {
+        if (this.cancelScheduledScrollToInput) {
+            this.cancelScheduledScrollToInput();
+            this.cancelScheduledScrollToInput = undefined;
+        }
+    }
+
     onUpArrow() {
         const { onUpArrow } = this.props;
 
@@ -237,6 +245,11 @@ export default class RNPickerSelect extends PureComponent {
     }
 
     scrollToInput() {
+        if (this.cancelScheduledScrollToInput) {
+            this.cancelScheduledScrollToInput();
+            this.cancelScheduledScrollToInput = undefined;
+        }
+
         if (
             this.props.scrollViewRef == null ||
             this.props.scrollViewContentOffsetY == null ||
@@ -253,11 +266,14 @@ export default class RNPickerSelect extends PureComponent {
 
             // If TextInput is below picker modal, scroll up
             if (textInputBottomY > modalY) {
+                const scrollView = this.props.scrollViewRef.current;
+                const scrollViewContentOffsetY = this.props.scrollViewContentOffsetY;
+
                 // Wait until the modal animation finishes, so the scrolling is effective when PickerAvoidingView is
                 // used
-                setTimeout(() => {
-                    this.props.scrollViewRef.current.scrollTo({
-                        y: textInputBottomY - modalY + 10 + this.props.scrollViewContentOffsetY,
+                this.cancelScheduledScrollToInput = schedule(() => {
+                    scrollView.scrollTo({
+                        y: textInputBottomY - modalY + 10 + scrollViewContentOffsetY,
                     });
                 }, IOS_MODAL_ANIMATION_DURATION_MS + 50);
             }
