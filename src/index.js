@@ -291,13 +291,12 @@ export default class RNPickerSelect extends PureComponent {
 
         if (Keyboard.isVisible()) {
             const keyboardListener = Keyboard.addListener('keyboardDidHide', () => {
-               this.updatePickerState(animate,postToggleCallback);
+               this.updatePickerState(animate, postToggleCallback);
                keyboardListener.remove();
             });
             Keyboard.dismiss();
-        }
-        else {
-            this.updatePickerState(animate,postToggleCallback);
+        } else {
+            this.updatePickerState(animate, postToggleCallback);
         }
     }
 
