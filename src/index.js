@@ -10,9 +10,9 @@ import { Dimensions } from 'react-native';
 // This height was tested thoroughly on several iPhone Models (from iPhone 8 to 14 Pro)
 const IOS_MODAL_HEIGHT = 262;
 
-const preserveSpaces = (label) =>  {
+const preserveSpaces = (label) => {
     return label.replace(/ /g, '\u00a0');
- }
+};
 
 export default class RNPickerSelect extends PureComponent {
     static propTypes = {
@@ -151,6 +151,7 @@ export default class RNPickerSelect extends PureComponent {
         this.scrollToInput = this.scrollToInput.bind(this);
         this.togglePicker = this.togglePicker.bind(this);
         this.renderInputAccessoryView = this.renderInputAccessoryView.bind(this);
+        this.updatePickerState = this.updatePickerState.bind(this);
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -264,23 +265,10 @@ export default class RNPickerSelect extends PureComponent {
         }
     }
 
-    togglePicker(animate = false, postToggleCallback) {
-        const { modalProps, disabled } = this.props;
-        const { showPicker } = this.state;
-
-        if (disabled) {
-            return;
-        }
-
-        if (!showPicker) {
-            Keyboard.dismiss();
-        }
-
+    updatePickerState = (animate = false, postToggleCallback) => {
+        const { modalProps } = this.props;
         const animationType =
             modalProps && modalProps.animationType ? modalProps.animationType : 'slide';
-
-        this.triggerOpenCloseCallbacks();
-
         this.setState(
             (prevState) => {
                 return {
@@ -294,6 +282,26 @@ export default class RNPickerSelect extends PureComponent {
                 }
             }
         );
+    };
+
+    togglePicker(animate = false, postToggleCallback) {
+        const { disabled } = this.props;
+
+        if (disabled) {
+            return;
+        }
+
+        this.triggerOpenCloseCallbacks();
+
+        if (Keyboard.isVisible()) {
+            const keyboardListener = Keyboard.addListener('keyboardDidHide', () => {
+                this.updatePickerState(animate, postToggleCallback);
+                keyboardListener.remove();
+            });
+            Keyboard.dismiss();
+        } else {
+            this.updatePickerState(animate, postToggleCallback);
+        }
     }
 
     renderPickerItems() {
