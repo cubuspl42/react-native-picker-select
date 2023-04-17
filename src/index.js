@@ -10,9 +10,9 @@ import { Dimensions } from 'react-native';
 // This height was tested thoroughly on several iPhone Models (from iPhone 8 to 14 Pro)
 const IOS_MODAL_HEIGHT = 262;
 
-const preserveSpaces = (label) =>  {
+const preserveSpaces = (label) => {
     return label.replace(/ /g, '\u00a0');
- }
+};
 
 export default class RNPickerSelect extends PureComponent {
     static propTypes = {
@@ -282,7 +282,7 @@ export default class RNPickerSelect extends PureComponent {
                 }
             }
         );
-    }
+    };
 
     togglePicker(animate = false, postToggleCallback) {
         const { disabled } = this.props;
@@ -295,8 +295,8 @@ export default class RNPickerSelect extends PureComponent {
 
         if (Keyboard.isVisible()) {
             const keyboardListener = Keyboard.addListener('keyboardDidHide', () => {
-               this.updatePickerState(animate, postToggleCallback);
-               keyboardListener.remove();
+                this.updatePickerState(animate, postToggleCallback);
+                keyboardListener.remove();
             });
             Keyboard.dismiss();
         } else {
